@@ -1,0 +1,39 @@
+ingress:
+  enabled: true
+  host: null
+  # 特定のホスト名でWebページにアクセスするには上記hostの値をopen-webui.localのようにホスト名のFQDNにする。
+  # host: "open-webui.local"
+extraEnvVars:
+# デバッグメッセージの出力設定
+- name: GLOBAL_LOG_LEVEL
+  value: "DEBUG"
+- name: OLLAMA_DEBUG
+  value: "1"
+# パフォーマンスの向上の設定
+- name: ENABLE_AUTOCOMPLETE_GENERATION
+  value: "false"
+- name: ENABLE_TAGS_GENERATION
+  value: "false"
+- name: ENABLE_SEARCH_QUERY_GENERATION
+  value: "false"
+- name: ENABLE_RETRIEVAL_QUERY_GENERATION
+  value: "false"
+# Arenaモデルの無効化
+- name: ENABLE_EVALUATION_ARENA_MODELS
+  value: "false"
+# pipelineのOpenAPI Key(組み込みpipelineのdefault値)
+- name: OPENAI_API_KEY
+  value: "0p3n-w3bu!"
+# Ollama(推論エンジン)の設定
+ollama:
+  enabled: false # Ollamaはインストールしない
+  persistentVolume: # 永続化ストレージを利用
+    enabled: true
+# Apache Tikaによるファイルのパースを設定
+tika:
+  image:
+    tag: 3.1.0.0-full
+  enabled: true
+# ローカルホストにインストールされたOllamaに接続
+ollamaUrls:
+- http://host.docker.internal:11434
