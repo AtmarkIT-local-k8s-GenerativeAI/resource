@@ -1,0 +1,25 @@
+cluster:
+  name: kubernetes
+clusterMetrics:
+  enabled: true
+clusterEvents:
+  enabled: true
+alloy-metrics:
+  enabled: true
+podLogs:
+  enabled: true
+alloy-logs:
+  enabled: true
+alloy-singleton:
+  enabled: true
+destinations:
+  - name: hostedMetrics
+    type: prometheus
+    url: http://lgtm-mimir-nginx/api/v1/push
+  - name: localPrometheus
+    type: prometheus
+    url: http://lgtm-mimir-nginx/api/v1/push
+  - name: hostedLogs
+    type: loki
+    url: http://lgtm-loki-gateway/loki/api/v1/push
+

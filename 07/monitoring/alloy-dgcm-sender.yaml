@@ -1,0 +1,29 @@
+alloy:
+  configMap:
+    create: true
+    name: alloy-config
+    key: config.alloy
+    content: |-
+      // メトリクスの書き込み先を定義
+      prometheus.remote_write "mimir" {
+        endpoint {
+         url = "http://lgtm-mimir-nginx/api/v1/push"
+        }
+      }
+      // dcgm-exporterのPodを検出
+      discovery.kubernetes "dcgm_exporter_pods" {
+        role = "pod"
+        namespaces {
+          names = ["gpu-operator"]
+        }
+        selectors {
+          role  = "pod"
+          label = "app.kubernetes.io/name=dcgm-exporter"
+        }
+      }
+      // スクレイプの設定
+      prometheus.scrape "dcgm_scrape" {
+        job_name = "nvidia/dcgm_exporter"
+        targets    = discovery.kubernetes.dcgm_exporter_pods.targets
+        forward_to = [prometheus.remote_write.mimir.receiver]
+      }

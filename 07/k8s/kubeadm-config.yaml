@@ -1,0 +1,27 @@
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: v1.33.2
+networking:
+  serviceSubnet: "10.96.0.0/12"
+  podSubnet: "192.168.0.0/16"
+  dnsDomain: "cluster.local"
+# Kubernetes v1.33以前のバージョンはDRAを有効にするため下記の設定が必要
+apiServer:
+  extraArgs:
+    - name: runtime-config
+      value: "resource.k8s.io/v1beta1=true"
+    - name: feature-gates
+      value: "DynamicResourceAllocation=true"
+controllerManager:
+  extraArgs:
+    - name: feature-gates
+      value: "DynamicResourceAllocation=true"
+scheduler:
+  extraArgs:
+    - name: feature-gates
+      value: "DynamicResourceAllocation=true"
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+featureGates:
+  DynamicResourceAllocation: true
