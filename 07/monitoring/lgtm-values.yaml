@@ -2,11 +2,52 @@
 loki:
   loki:
     structuredConfig:
+      # メタデータの構造化を行いGrafanaで読めるようにする
       limits_config:
         allow_structured_metadata: true
+      # minio上のログデータの圧縮
+      compactor:
+        shared_store: s3
+        working_directory: /var/loki/compactor
+      storage_config:
+        # インデックスをローカルのboltdbに保存しminioに同期
+        boltdb_shipper:
+          active_index_directory: /var/loki/index
+          cache_location: /var/loki/cache
+          shared_store: s3
+        # S3ストレージをminioに設定
+        aws:
+          bucketnames: loki-chunks
+          endpoint: lgtm-minio:9000
+          access_key_id: ${MINIO_ACCESS_KEY_ID}
+          secret_access_key: ${MINIO_SECRET_ACCESS_KEY}
+          s3forcepathstyle: true
+          insecure: true
+      # boltdbの設定
+      schema_config:
+        configs:
+          - from: "2024-01-01"
+            store: boltdb-shipper
+            object_store: s3
+            schema: v12
+            index:
+              prefix: index_
+              period: 24h
+  extraEnv:
+    # minioのシークレットの設定
+    - name: MINIO_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          name: lgtm-minio
+          key: rootUser
+    - name: MINIO_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: lgtm-minio
+          key: rootPassword
+# GrafanaのIngressを設定
 grafana:
   ingress:
     enabled: true
     hosts:
     - grafana.local
-
