@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcpo-tools
+  namespace: open-webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcpo-tools
+  template:
+    metadata:
+      labels:
+        app: mcpo-tools
+    spec:
+      # Init Containerでmcp-grafanaをインストール
+      initContainers:
+        - name: init-download-mcp-grafana
+          image: alpine:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache curl tar && \
+              curl -L -o /tmp/mcp-grafana.tar.gz https://github.com/grafana/mcp-grafana/releases/download/v0.6.2/mcp-grafana_Linux_x86_64.tar.gz && \
+              mkdir -p /mcp-grafana-bin && \
+              tar -xzvf /tmp/mcp-grafana.tar.gz -C /mcp-grafana-bin && \
+              chmod +x /mcp-grafana-bin/mcp-grafana
+          volumeMounts:
+            - name: mcp-grafana-bin
+              mountPath: /mcp-grafana-bin
+      containers:
+        - name: mcpo-tools
+          image: ghcr.io/open-webui/mcpo:main
+          command: ["mcpo", "--config", "/app/config.json"]
+          ports:
+            - name: http-api
+              containerPort: 8000 
+              protocol: TCP
+          env:
+            - name: PATH
+              value: /mcp-grafana-bin:/app:/app/.venv/bin:/usr/bin
+          volumeMounts:
+            - name: mcpo-config
+              mountPath: /app/config.json
+              subPath: config.json
+            - name: mcp-grafana-bin
+              mountPath: /mcp-grafana-bin
+      volumes:
+        - name: mcpo-config
+          secret:
+            secretName: mcpo-configsecret
+        - name: mcp-grafana-bin
+          emptyDir: {}
