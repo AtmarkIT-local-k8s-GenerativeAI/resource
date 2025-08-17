@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "time": {
+      "command": "uvx",
+      "args": ["mcp-server-time", "--local-timezone=Asia/Tokyo"]
+    },
+    "mcp-grafana": {
+      "command": "mcp-grafana",
+      "args": [
+        "-debug",
+        "--disable-oncall",
+        "--disable-admin",
+        "--disable-incident",
+        "--disable-alerting",
+        "--disable-sift",
+        "--disable-pyroscope"
+        ],
+      "env": {
+        "GRAFANA_URL": "http://lgtm-grafana.monitoring.svc.cluster.local:80",
+        "GRAFANA_API_KEY": "[取得したGrafanaのToken]"
+      }
+    }
+  }
+}
