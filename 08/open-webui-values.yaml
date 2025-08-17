@@ -1,0 +1,29 @@
+# Open WebUIのHelm用 values.yaml
+ingress:
+  enabled: true
+  host: null
+  # 特定のホスト名でWebページにアクセスするには上記hostの値をopen-webui.localのようにホスト名のFQDNにする。
+  # host: "open-webui.local"
+extraEnvVars:
+# デバッグメッセージの出力設定
+- name: GLOBAL_LOG_LEVEL
+  value: "DEBUG"
+- name: OLLAMA_DEBUG
+  value: "1"
+# Arenaモデルの無効化
+- name: ENABLE_EVALUATION_ARENA_MODELS
+  value: "false"
+# Ollama(推論エンジン)の設定
+ollama:
+  enabled: true
+  persistentVolume: # 永続化ストレージを利用
+    enabled: true
+    size: 300Gi
+  resources:
+    limits: 
+      cpu: "8"
+      memory: 64Gi
+  gpu: 
+    enabled: true
+    draEnabled: true
+    number: 1 # 利用するGPUの個数
