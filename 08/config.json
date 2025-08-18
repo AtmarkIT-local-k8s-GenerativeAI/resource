@@ -17,7 +17,7 @@
         ],
       "env": {
         "GRAFANA_URL": "http://lgtm-grafana.monitoring.svc.cluster.local:80",
-        "GRAFANA_API_KEY": "[取得したGrafanaのToken]"
+        "GRAFANA_API_KEY": "[取得したGrafanaのトークン]"
       }
     }
   }
