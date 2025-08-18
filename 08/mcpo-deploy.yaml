@@ -34,7 +34,7 @@ spec:
           command: ["mcpo", "--config", "/app/config.json"]
           ports:
             - name: http-api
-              containerPort: 8000 
+              containerPort: 8000
               protocol: TCP
           env:
             - name: PATH
