@@ -1,0 +1,17 @@
+# --- 無効化したいツールカテゴリ
+disabledCategories:
+  - oncall
+  - admin
+  - incident
+  - alerting
+  - sift
+  - pyroscope
+  - asserts
+
+# --- Streamable HTTP を有効化（:8000で待受）
+extraArgs:
+  - -t
+  - streamable-http
+  - --address=0.0.0.0:8000
+  - --debug
+
